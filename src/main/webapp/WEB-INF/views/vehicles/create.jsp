@@ -27,7 +27,7 @@
                         <!-- form start -->
                         <!-- Le  type de methode http qui sera appel� lors de action submit du formulaire -->
                         <!-- est d�crit an l'attribut "method" de la balise forme -->
-                        <!-- action indique � quel "cible" sera envoyr la requ�te, ici notre Servlet qui sera bind sur -->
+                        <!-- action indique � quel "cible" sera envoyer la requ�te, ici notre Servlet qui sera bind sur -->
                         <!-- /vehicles/create -->
                         <form class="form-horizontal" method="post">
                             <div class="box-body">

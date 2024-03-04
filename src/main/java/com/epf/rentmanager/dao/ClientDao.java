@@ -98,4 +98,18 @@ public class ClientDao {
 		}
 		return clients;
 	}
+
+	public int count() throws DaoException {
+		int count = 0;
+		try (Connection connection = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "");
+			 PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) AS total FROM Client");
+			 ResultSet resultSet = statement.executeQuery()) {
+			if (resultSet.next()) {
+				count = resultSet.getInt(1);
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return count;
+	}
 }

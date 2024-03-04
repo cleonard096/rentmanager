@@ -48,6 +48,13 @@ public class Reservation {
         this.fin = fin;
     }
 
+    public Reservation( int clientId, int vehicleId, LocalDate debut, LocalDate fin) {
+        this.clientId = clientId;
+        this.vehicleId = vehicleId;
+        this.debut = debut;
+        this.fin = fin;
+    }
+
     // Getters et Setters (omis pour la brièveté)
 
     @Override

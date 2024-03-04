@@ -120,9 +120,10 @@ public class MainCLI {
         IOUtils.print("\n### Création d'un véhicule ###");
 
         String constructeur = IOUtils.readString("Constructeur : ",true);
+        String modele = IOUtils.readString("Modèle : ",true);
         int nbPlaces = IOUtils.readInt("Nombre de places : ",true);
         try {
-            long vehicleId = vehicleService.create(new Vehicle(constructeur,nbPlaces));
+            long vehicleId = vehicleService.create(new Vehicle(constructeur,modele,nbPlaces));
             IOUtils.print("Véhicule créé avec succès ! (ID : " + vehicleId + ")");
         } catch (ServiceException e) {
             IOUtils.print("Erreur lors de la création du véhicule : " + e.getMessage());

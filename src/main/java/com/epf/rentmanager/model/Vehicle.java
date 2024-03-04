@@ -24,6 +24,12 @@ public class Vehicle {
         this.modele = modele;
         this.nbPlaces = nbPlaces;
     }
+    public Vehicle( String constructeur, String modele, int nbPlaces) {
+        this.vehicleId = vehicleId;
+        this.constructeur = constructeur;
+        this.modele = modele;
+        this.nbPlaces = nbPlaces;
+    }
     public Vehicle( String constructeur, int nbPlaces) {
         this.constructeur = constructeur;
         this.nbPlaces = nbPlaces;

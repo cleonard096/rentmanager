@@ -143,4 +143,18 @@ public class ReservationDao {
 		}
 		return reservation;
 	}
+
+	public int count() throws DaoException {
+		try (Connection connection = ConnectionManager.getConnection();
+			 PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) AS total FROM Reservation");
+			 ResultSet resultSet = statement.executeQuery()) {
+			if (resultSet.next()) {
+				return resultSet.getInt(1);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Error while counting reservations: " + e.getMessage());
+		}
+		return 0;
+	}
+
 }

@@ -57,4 +57,12 @@ public class ClientService {
 			throw new ServiceException(e.getMessage(),e);
 		}
 	}
+
+	public int count() throws ServiceException {
+		try {
+			return clientDao.count();
+		} catch (DaoException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
 }

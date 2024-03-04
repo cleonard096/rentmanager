@@ -1,5 +1,10 @@
 package com.epf.rentmanager.servlet;
 
+import com.epf.rentmanager.service.ClientService;
+import com.epf.rentmanager.service.ReservationService;
+import com.epf.rentmanager.service.ServiceException;
+import com.epf.rentmanager.service.VehicleService;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -19,7 +24,27 @@ public class HomeServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		this.getServletContext().getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
+		try {
+			// Récupérer le nombre d'utilisateurs, de véhicules et de réservations
+			int userCount = ClientService.getInstance().count();
+			int vehicleCount = VehicleService.getInstance().count();
+			int reservationCount = ReservationService.getInstance().count();
+
+			// Ajouter les attributs à la requête pour les afficher dans la JSP
+			request.setAttribute("userCount", userCount);
+			request.setAttribute("vehicleCount", vehicleCount);
+			request.setAttribute("reservationCount", reservationCount);
+
+			// Rediriger vers la page home.jsp
+			this.getServletContext().getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
+
+		} catch (ServiceException e) {
+			// Gérer toute exception et afficher une page d'erreur si nécessaire
+			request.setAttribute("errorMessage", "Error: " + e.getMessage());
+			this.getServletContext().getRequestDispatcher("/WEB-INF/views/error.jsp").forward(request, response);
+		}
 	}
+
+
 
 }

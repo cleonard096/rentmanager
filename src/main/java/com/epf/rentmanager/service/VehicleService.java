@@ -60,4 +60,12 @@ public class VehicleService {
 			throw new ServiceException(e.getMessage(),e);
 		}
 	}
+
+	public int count() throws ServiceException {
+		try {
+			return VehicleDao.getInstance().count();
+		} catch (DaoException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
 }
