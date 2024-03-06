@@ -43,12 +43,9 @@
                                             <a class="btn btn-primary" href="${pageContext.request.contextPath}/users/details?id=${client.clientId}">
                                                 <i class="fa fa-play"></i>
                                             </a>
-                                            <a class="btn btn-success disabled" href="#">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                            <a class="btn btn-danger disabled" href="#">
+                                            <button class="btn btn-danger delete-btn" data-client-id="${client.clientId}">
                                                 <i class="fa fa-trash"></i>
-                                            </a>
+                                            </button>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -71,3 +68,26 @@
 <%@ include file="/WEB-INF/views/common/js_imports.jsp" %>
 </body>
 </html>
+
+<script>
+    $(document).ready(function () {
+        $(".delete-btn").click(function () {
+            var clientId = $(this).data("client-id");
+            var confirmation = confirm('Etes-vous sur de vouloir supprimer ce client ?');
+            if (confirmation) {
+                $.ajax({
+                    type: "POST",
+                    url: "${pageContext.request.contextPath}/users",
+                    data: {clientId: clientId},
+                    success: function (data) {
+                        location.reload(); // Rafraîchit la page après la suppression
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        // Affiche un message d'erreur ou gère l'erreur autrement
+                    }
+                });
+            }
+        });
+    });
+</script>

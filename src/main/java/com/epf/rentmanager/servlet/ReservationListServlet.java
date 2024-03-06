@@ -31,4 +31,15 @@ public class ReservationListServlet extends HttpServlet {
             throw new ServletException("An error occurred while retrieving the reservation list", e);
         }
     }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            long reservationId = Long.parseLong(request.getParameter("reservationId"));
+            Reservation reservation = new Reservation();
+            reservation = ReservationService.getInstance().findById(reservationId);
+            reservationService.delete(reservation);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (NumberFormatException | ServiceException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
 }

@@ -32,6 +32,17 @@ public class VehicleListServlet extends HttpServlet {
             throw new ServletException("An error occurred while retrieving the vehicle list", e);
         }
     }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            long vehicleId = Long.parseLong(request.getParameter("vehicleId"));
+            Vehicle vehicle =new Vehicle();
+            vehicle = vehicleService.findById(vehicleId);
+            vehicleService.delete(vehicle);
+            response.sendRedirect(request.getContextPath() + "/cars");
+        } catch (NumberFormatException | ServiceException e) {
+            throw new ServletException("An error occurred while deleting the vehicle", e);
+        }
+    }
 }
 
 

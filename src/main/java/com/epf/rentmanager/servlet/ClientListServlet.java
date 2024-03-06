@@ -31,5 +31,17 @@ public class ClientListServlet extends HttpServlet {
             throw new ServletException("An error occurred while retrieving the client list", e);
         }
     }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            long clientId = Long.parseLong(request.getParameter("clientId"));
+            Client client = new Client();
+            client =clientService.findById(clientId);
+            clientService.delete(client);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (NumberFormatException | ServiceException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+    }
 }
 

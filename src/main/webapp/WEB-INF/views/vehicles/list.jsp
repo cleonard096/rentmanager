@@ -1,6 +1,7 @@
 <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <!DOCTYPE html>
 <html>
+<html lang="fr">
 <%@include file="/WEB-INF/views/common/head.jsp"%>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -41,7 +42,6 @@
                                     <td>${vehicle.constructeur}</td>
                                     <td>${vehicle.modele}</td>
                                     <td>${vehicle.nbPlaces}</td>
-                                    <!--<td>John Doe</td>-->
                                     <td>
                                         <a class="btn btn-primary disabled" href="car-detail.html">
                                             <i class="fa fa-play"></i>
@@ -49,9 +49,9 @@
                                         <a class="btn btn-success disabled" href="#">
                                             <i class="fa fa-edit"></i>
                                         </a>
-                                        <a class="btn btn-danger disabled" href="#">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
+                                        <button class="btn btn-danger delete-btn" data-vehicle-id="${vehicle.vehicleId}">
+                                             <i class="fa fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                                 </c:forEach>
@@ -74,3 +74,25 @@
 <%@ include file="/WEB-INF/views/common/js_imports.jsp" %>
 </body>
 </html>
+
+<script>
+    $(document).ready(function () {
+        $(".delete-btn").click(function () {
+            var vehicleId = $(this).data("vehicle-id");
+            var confirmation = confirm('Etes-vous sur de vouloir supprimer ce vehicule ?');
+            if (confirmation) {
+                $.ajax({
+                    type: "POST",
+                    url: "${pageContext.request.contextPath}/cars",
+                    data: {vehicleId: vehicleId},
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
+    });
+</script>

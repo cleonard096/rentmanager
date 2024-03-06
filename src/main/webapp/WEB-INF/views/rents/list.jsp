@@ -48,9 +48,9 @@
                                             <a class="btn btn-success disabled" href="#">
                                                 <i class="fa fa-edit"></i>
                                             </a>
-                                            <a class="btn btn-danger disabled" href="#">
+                                            <button class="btn btn-danger delete-btn" data-reservation-id="${reservation.reservationId}">
                                                 <i class="fa fa-trash"></i>
-                                            </a>
+                                            </button>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -73,3 +73,25 @@
 <%@ include file="/WEB-INF/views/common/js_imports.jsp" %>
 </body>
 </html>
+
+<script>
+    $(document).ready(function () {
+        $(".delete-btn").click(function () {
+            var reservationId = $(this).data("reservation-id");
+            var confirmation = confirm('Etes-vous sur de vouloir supprimer cette reservation ?');
+            if (confirmation) {
+                $.ajax({
+                    type: "POST",
+                    url: "${pageContext.request.contextPath}/rents",
+                    data: {reservationId: reservationId},
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
+    });
+</script>
