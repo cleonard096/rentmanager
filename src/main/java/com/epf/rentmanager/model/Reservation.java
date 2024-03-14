@@ -27,6 +27,8 @@ public class Reservation {
     private int vehicleId;
     private LocalDate debut;
     private LocalDate fin;
+    private String ClientFullName;
+    private String VehicleDescr;
 
     // Constructeur vide
     public Reservation() {
@@ -106,5 +108,21 @@ public class Reservation {
 
     public void setFin(LocalDate fin) {
         this.fin = fin;
+    }
+
+    public String getClientFullName() {
+        return ClientFullName;
+    }
+
+    public String getVehicleDescr() {
+        return VehicleDescr;
+    }
+
+    public void setClientFullName(String clientFullName) {
+        ClientFullName = clientFullName;
+    }
+
+    public void setVehicleDescr(String vehicleDescr) {
+        VehicleDescr = vehicleDescr;
     }
 }
