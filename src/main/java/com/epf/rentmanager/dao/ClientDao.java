@@ -49,11 +49,16 @@ public class ClientDao {
 	}
 	public long delete(Client client) throws DaoException {
 		try {
+			ReservationDao reservationDao = ReservationDao.getInstance();
+			List<Reservation> reservations = reservationDao.findResaByClientId(client.getClientId());
+			for (Reservation reservation : reservations) {
+				reservationDao.delete(reservation);
+			}
 			Connection connexion = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "");
 			PreparedStatement statement = connexion.prepareStatement(DELETE_CLIENT_QUERY);
 			statement.setInt(1, client.getClientId());
-
 			statement.execute();
+
 		} catch (SQLException e) {
 			throw new DaoException(e.getMessage());
 		}

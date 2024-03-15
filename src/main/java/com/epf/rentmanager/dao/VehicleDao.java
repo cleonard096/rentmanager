@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.epf.rentmanager.model.Client;
+import com.epf.rentmanager.model.Reservation;
 import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.persistence.ConnectionManager;
 public class VehicleDao {
@@ -47,6 +48,11 @@ public class VehicleDao {
 
 	public long delete(Vehicle vehicle) throws DaoException {
 		try {
+			ReservationDao reservationDao = ReservationDao.getInstance();
+			List<Reservation> reservations = reservationDao.findResaByVehicleId(vehicle.getVehicleId());
+			for (Reservation res : reservations) {
+				reservationDao.delete(res);
+			}
 			Connection connection = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "");
 			PreparedStatement statement = connection.prepareStatement(DELETE_VEHICLE_QUERY);
 			statement.setInt(1,vehicle.getVehicleId());
