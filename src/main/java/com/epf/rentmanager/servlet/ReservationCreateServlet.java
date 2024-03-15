@@ -24,7 +24,7 @@ public class ReservationCreateServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<Client> clients = ClientService.getInstance().findAll();
+            List<Client> clients = (ClientService.getInstance()).findAll();
             List<Vehicle> vehicles = VehicleService.getInstance().findAll();
             request.setAttribute("clients", clients);
             request.setAttribute("vehicles", vehicles);
@@ -41,9 +41,14 @@ public class ReservationCreateServlet extends HttpServlet {
         int clientId = Integer.parseInt(request.getParameter("client"));
         LocalDate debut = LocalDate.parse(request.getParameter("begin"));
         LocalDate fin = LocalDate.parse(request.getParameter("end"));
+        Reservation reservation= new Reservation();
+        reservation.setClientId(clientId);
+        reservation.setVehicleId(vehicleId);
+        reservation.setDebut(debut);
+        reservation.setFin(fin);
 
         try {
-            ReservationService.getInstance().create(new Reservation(vehicleId, clientId, debut, fin));
+            ReservationService.getInstance().create(reservation);
             response.sendRedirect(request.getContextPath() + "/rents");
         } catch (ServiceException e) {
             e.printStackTrace();
