@@ -3,6 +3,8 @@ package com.epf.rentmanager.servlet;
 import com.epf.rentmanager.model.Client;
 import com.epf.rentmanager.service.ClientService;
 import com.epf.rentmanager.service.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,11 +17,25 @@ import java.util.List;
 @WebServlet("/users")
 public class ClientListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
+    @Autowired
     private final ClientService clientService;
 
     public ClientListServlet() {
         super();
-        this.clientService = ClientService.getInstance();
+        this.clientService = null;
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
+
+    @Autowired
+    public ClientListServlet(ClientService clientService) {
+        super();
+        this.clientService = clientService;
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,11 +47,11 @@ public class ClientListServlet extends HttpServlet {
             throw new ServletException("An error occurred while retrieving the client list", e);
         }
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             long clientId = Long.parseLong(request.getParameter("clientId"));
-            Client client = new Client();
-            client =clientService.findById(clientId);
+            Client client = clientService.findById(clientId);
             clientService.delete(client);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (NumberFormatException | ServiceException e) {
@@ -44,4 +60,3 @@ public class ClientListServlet extends HttpServlet {
         }
     }
 }
-

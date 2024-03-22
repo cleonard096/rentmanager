@@ -7,6 +7,8 @@ import com.epf.rentmanager.service.ClientService;
 import com.epf.rentmanager.service.ReservationService;
 import com.epf.rentmanager.service.ServiceException;
 import com.epf.rentmanager.service.VehicleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,11 +21,30 @@ import java.util.List;
 @WebServlet("/rents")
 public class ReservationListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    @Autowired
     private final ReservationService reservationService;
 
     public ReservationListServlet() {
         super();
-        this.reservationService = ReservationService.getInstance();
+        this.reservationService = null;
+    }
+
+    @Autowired
+    public ReservationListServlet(ReservationService reservationService) {
+        super();
+        this.reservationService = reservationService;
+    }
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private VehicleService vehicleService;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,11 +52,11 @@ public class ReservationListServlet extends HttpServlet {
             List<Reservation> reservations = reservationService.findAll();
 
             for (Reservation reservation : reservations) {
-                Client client = ClientService.getInstance().findById(reservation.getClientId());
+                Client client = clientService.findById(reservation.getClientId());
                 String clientFullName = client.getNom() + " " + client.getPrenom();
                 reservation.setClientFullName(clientFullName);
 
-                Vehicle vehicle = VehicleService.getInstance().findById(reservation.getVehicleId());
+                Vehicle vehicle = vehicleService.findById(reservation.getVehicleId());
                 String vehicleDescr = vehicle.getConstructeur() + " " + vehicle.getModele();
                 reservation.setVehicleDescr(vehicleDescr);
             }
@@ -47,11 +68,12 @@ public class ReservationListServlet extends HttpServlet {
             throw new ServletException("An error occurred while retrieving the reservation list", e);
         }
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             long reservationId = Long.parseLong(request.getParameter("reservationId"));
             Reservation reservation = new Reservation();
-            reservation = ReservationService.getInstance().findById(reservationId);
+            reservation = reservationService.findById(reservationId);
             reservationService.delete(reservation);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (NumberFormatException | ServiceException e) {

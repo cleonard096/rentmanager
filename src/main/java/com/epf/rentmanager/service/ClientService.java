@@ -1,28 +1,21 @@
 package com.epf.rentmanager.service;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.epf.rentmanager.dao.ClientDao;
 import com.epf.rentmanager.dao.DaoException;
 import com.epf.rentmanager.model.Client;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 
+@Service
 public class ClientService {
 
-	private ClientDao clientDao;
-	public static ClientService instance;
-	
-	private ClientService() {
-		this.clientDao = ClientDao.getInstance();
-	}
+	private final ClientDao clientDao;
 
-	public static ClientService getInstance() {
-		if (instance == null) {
-			instance = new ClientService();
-		}
-		return instance;
+	@Autowired
+	public ClientService(ClientDao clientDao) {
+		this.clientDao = clientDao;
 	}
-
 
 	public long create(Client client) throws ServiceException {
 		if (client.getNom().isEmpty() || client.getPrenom().isEmpty()) {
@@ -40,21 +33,23 @@ public class ClientService {
 		try {
 			return clientDao.findById(id);
 		} catch (DaoException e) {
-			throw new ServiceException(e.getMessage(),e);
+			throw new ServiceException(e.getMessage(), e);
 		}
 	}
+
 	public List<Client> findAll() throws ServiceException {
 		try {
 			return clientDao.findAll();
 		} catch (DaoException e) {
-			throw new ServiceException(e.getMessage(),e);
+			throw new ServiceException(e.getMessage(), e);
 		}
 	}
-	public  long delete(Client client) throws ServiceException {
+
+	public long delete(Client client) throws ServiceException {
 		try {
 			return clientDao.delete(client);
 		} catch (DaoException e) {
-			throw new ServiceException(e.getMessage(),e);
+			throw new ServiceException(e.getMessage(), e);
 		}
 	}
 

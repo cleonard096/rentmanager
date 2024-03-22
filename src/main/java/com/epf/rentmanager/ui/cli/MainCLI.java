@@ -1,5 +1,6 @@
 package com.epf.rentmanager.ui.cli;
 
+import com.epf.rentmanager.AppConfiguration;
 import com.epf.rentmanager.model.Client;
 import com.epf.rentmanager.model.Reservation;
 import com.epf.rentmanager.model.Vehicle;
@@ -8,15 +9,19 @@ import com.epf.rentmanager.service.ReservationService;
 import com.epf.rentmanager.service.ServiceException;
 import com.epf.rentmanager.service.VehicleService;
 import com.epf.rentmanager.utils.IOUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class MainCLI {
 
-    private static final ClientService clientService = ClientService.getInstance();
-    private static final VehicleService vehicleService = VehicleService.getInstance();
-    private static final ReservationService reservationService = ReservationService.getInstance();
+    private static final ApplicationContext context = new AnnotationConfigApplicationContext(AppConfiguration.class);
+    private static final ClientService clientService = context.getBean(ClientService.class);
+    private static final VehicleService vehicleService = context.getBean(VehicleService.class);
+    private static final ReservationService reservationService = context.getBean(ReservationService.class);
 
     public static void main(String[] args) {
         displayMainMenu();

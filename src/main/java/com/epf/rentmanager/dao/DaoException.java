@@ -1,4 +1,6 @@
 package com.epf.rentmanager.dao;
+import org.springframework.stereotype.Repository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

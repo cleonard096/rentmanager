@@ -7,6 +7,8 @@ import com.epf.rentmanager.service.ClientService;
 import com.epf.rentmanager.service.ReservationService;
 import com.epf.rentmanager.service.ServiceException;
 import com.epf.rentmanager.service.VehicleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,12 +22,22 @@ import java.util.List;
 @WebServlet("/rents/create")
 public class ReservationCreateServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
+    @Autowired
+    private ClientService clientService;
+    @Autowired
+    private VehicleService vehicleService;
+    @Autowired
+    private ReservationService reservationService;
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+    }
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<Client> clients = (ClientService.getInstance()).findAll();
-            List<Vehicle> vehicles = VehicleService.getInstance().findAll();
+            List<Client> clients = clientService.findAll();
+            List<Vehicle> vehicles = vehicleService.findAll();
             request.setAttribute("clients", clients);
             request.setAttribute("vehicles", vehicles);
             this.getServletContext().getRequestDispatcher("/WEB-INF/views/rents/create.jsp").forward(request, response);
@@ -48,7 +60,7 @@ public class ReservationCreateServlet extends HttpServlet {
         reservation.setFin(fin);
 
         try {
-            ReservationService.getInstance().create(reservation);
+            reservationService.create(reservation);
             response.sendRedirect(request.getContextPath() + "/rents");
         } catch (ServiceException e) {
             e.printStackTrace();

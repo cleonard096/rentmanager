@@ -3,6 +3,8 @@ package com.epf.rentmanager.servlet;
 import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.service.VehicleService;
 import com.epf.rentmanager.service.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,11 +18,18 @@ import java.util.List;
 public class VehicleListServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private final VehicleService vehicleService;
+
+    @Autowired
+    private VehicleService vehicleService;
 
     public VehicleListServlet() {
         super();
-        this.vehicleService = VehicleService.getInstance();
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,11 +41,11 @@ public class VehicleListServlet extends HttpServlet {
             throw new ServletException("An error occurred while retrieving the vehicle list", e);
         }
     }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             long vehicleId = Long.parseLong(request.getParameter("vehicleId"));
-            Vehicle vehicle =new Vehicle();
-            vehicle = vehicleService.findById(vehicleId);
+            Vehicle vehicle = vehicleService.findById(vehicleId);
             vehicleService.delete(vehicle);
             response.sendRedirect(request.getContextPath() + "/cars");
         } catch (NumberFormatException | ServiceException e) {
@@ -44,5 +53,3 @@ public class VehicleListServlet extends HttpServlet {
         }
     }
 }
-
-
