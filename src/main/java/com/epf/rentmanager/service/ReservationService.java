@@ -5,6 +5,7 @@ import com.epf.rentmanager.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Period;
 import java.util.List;
 @Service
 public class ReservationService {
@@ -16,15 +17,23 @@ public class ReservationService {
     }
 
     public long create(Reservation reservation) throws ServiceException {
-        if (reservation.getDebut().isAfter(reservation.getFin())) {
-            throw new ServiceException("La fin de la reservation doit etre après le debut.", null);
+        Period period = Period.between(reservation.getDebut(), reservation.getFin());
+        if (period.getDays()>7){
+            throw new ServiceException("La durée maximum de location est de 7 jours", null);
         }
+
         try {
+            List<Reservation> existingReservations = reservationDao.findResaByVehicleIdAndDate(
+                    reservation.getVehicleId(), reservation.getDebut(), reservation.getFin());
+            if (!existingReservations.isEmpty()) {
+                throw new ServiceException("La voiture est déjà réservée pour les dates spécifiées.", null);
+            }
             return reservationDao.create(reservation);
         } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
+
 
     public List<Reservation> findAll() throws ServiceException {
         try {

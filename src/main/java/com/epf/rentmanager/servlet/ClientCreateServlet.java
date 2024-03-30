@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @WebServlet("/users/create")
 public class ClientCreateServlet extends HttpServlet {
@@ -22,6 +23,7 @@ public class ClientCreateServlet extends HttpServlet {
 
     @Autowired
     private ClientService clientService;
+
     @Override
     public void init() throws ServletException {
         super.init();
@@ -45,7 +47,19 @@ public class ClientCreateServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/users");
         } catch (ServiceException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/error-page.jsp");
+            if (Objects.equals(e.getMessage(), "L'adresse email est déjà attribué à un client.")){
+                request.setAttribute("error_mail", e.getMessage());
+            }
+            if (Objects.equals(e.getMessage(), "Le client doit avoir au moins 18 ans pour être enregistré.")){
+                request.setAttribute("error_age", e.getMessage());
+            }
+            if (Objects.equals(e.getMessage(), "Le nom  du client doit contenir au moins 3 caracteres.")){
+                request.setAttribute("error_nom", e.getMessage());
+            }
+            if (Objects.equals(e.getMessage(), "Le prénom du client doit contenir au moins 3 caracteres.")){
+                request.setAttribute("error_prenom", e.getMessage());
+            }
+            this.getServletContext().getRequestDispatcher("/WEB-INF/views/users/create.jsp").forward(request, response);
         }
     }
 }

@@ -19,8 +19,11 @@ public class VehicleService {
 	}
 
 	public long create(Vehicle vehicle) throws ServiceException {
-		if (vehicle.getConstructeur().isEmpty() || vehicle.getNbPlaces() < 1) {
-			throw new ServiceException("Le constructeur du véhicule ne peut pas être vide et le nombre de places doit être supérieur à 0.", null);
+		if (vehicle.getConstructeur().isEmpty() || vehicle.getModele().isEmpty()) {
+			throw new ServiceException("Le modèle et le constructeur du véhicule ne peut pas être vide", null);
+		}
+		if (vehicle.getNbPlaces()<10 || vehicle.getNbPlaces()>1) {
+			throw new ServiceException("Le nombre de place doit être compris entre 2 et 9", null);
 		}
 		try {
 			return vehicleDao.create(vehicle);

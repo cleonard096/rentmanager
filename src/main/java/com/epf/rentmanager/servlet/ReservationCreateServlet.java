@@ -64,7 +64,27 @@ public class ReservationCreateServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/rents");
         } catch (ServiceException e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/error-page.jsp");
+            if (e.getMessage().startsWith("La fin")) {
+                request.setAttribute("dateError", e.getMessage());
+            } else {
+                request.setAttribute("error", e.getMessage());
+            }
+            // Rechargez les listes de clients et de véhicules
+            List<Client> clients = null;
+            try {
+                clients = clientService.findAll();
+            } catch (ServiceException ex) {
+                throw new RuntimeException(ex);
+            }
+            List<Vehicle> vehicles = null;
+            try {
+                vehicles = vehicleService.findAll();
+            } catch (ServiceException ex) {
+                throw new RuntimeException(ex);
+            }
+            request.setAttribute("clients", clients);
+            request.setAttribute("vehicles", vehicles);
+            this.getServletContext().getRequestDispatcher("/WEB-INF/views/rents/create.jsp").forward(request, response);
         }
     }
 }

@@ -4,7 +4,9 @@ import com.epf.rentmanager.dao.DaoException;
 import com.epf.rentmanager.model.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @Service
@@ -18,10 +20,28 @@ public class ClientService {
 	}
 
 	public long create(Client client) throws ServiceException {
-		if (client.getNom().isEmpty() || client.getPrenom().isEmpty()) {
-			throw new ServiceException("Le nom ou le prénom du client ne peut pas être vide.", null);
+		if (client.getNom().isEmpty()) {
+			throw new ServiceException("Le nom du client ne peut pas être vide.", null);
 		}
+		if (client.getPrenom().isEmpty()) {
+			throw new ServiceException("Le prénom du client ne peut pas être vide.", null);
+		}
+		if (client.getNom().length()<3 ) {
+			throw new ServiceException("Le nom  du client doit contenir au moins 3 caracteres.", null);
+		}
+		if (client.getPrenom().length()<3) {
+			throw new ServiceException("Le prénom du client doit contenir au moins 3 caracteres.", null);
+		}
+		LocalDate now = LocalDate.now();
+		Period period = Period.between(client.getDateNaissance(), now);
+		if (period.getYears() < 18) {
+			throw new ServiceException("Le client doit avoir au moins 18 ans pour être enregistré.", null);
+		}
+
 		try {
+			if (clientDao.mailexist(client.getEmail())) {
+				throw new ServiceException("L'adresse email est déjà attribué à un client.", null);
+			}
 			client.setNom(client.getNom().toUpperCase());
 			return clientDao.create(client);
 		} catch (DaoException e) {

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import java.io.IOException;
+import java.util.Objects;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -42,8 +43,10 @@ public class VehicleCreateServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/cars");
         } catch (ServiceException e) {
             e.printStackTrace();
-            System.out.println(e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/error-page.jsp");
+            if (Objects.equals(e.getMessage(), "Le nombre de place doit être compris entre 2 et 9")){
+                request.setAttribute("error_nbr", e.getMessage());
+            }
+            this.getServletContext().getRequestDispatcher("/WEB-INF/views/vehicles/create.jsp").forward(request, response);
         }
     }
 }

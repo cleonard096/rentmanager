@@ -51,12 +51,18 @@
                                     <label for="begin" class="col-sm-2 control-label">Date de debut</label>
                                     <div class="col-sm-10">
                                         <input type="date" class="form-control" id="begin" name="begin" required>
+                                        <% if (request.getAttribute("error") != null) { %>
+                                        <span class="text-danger"><%= request.getAttribute("error") %></span>
+                                        <% } %>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="end" class="col-sm-2 control-label">Date de fin</label>
                                     <div class="col-sm-10">
                                         <input type="date" class="form-control" id="end" name="end" required>
+                                        <% if (request.getAttribute("error") != null) { %>
+                                        <span class="text-danger"><%= request.getAttribute("error") %></span>
+                                        <% } %>
                                     </div>
                                 </div>
                             </div>

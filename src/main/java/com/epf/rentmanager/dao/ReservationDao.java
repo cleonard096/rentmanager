@@ -21,6 +21,7 @@ public class ReservationDao {
 	private static final String FIND_RESERVATIONS_BY_VEHICLE_QUERY = "SELECT id, client_id, debut, fin FROM Reservation WHERE vehicle_id=?;";
 	private static final String FIND_RESERVATIONS_QUERY = "SELECT id, client_id, vehicle_id, debut, fin FROM Reservation;";
 	private static final String FIND_RESERVATION_QUERY = "SELECT client_id, vehicle_id, debut, fin FROM Reservation WHERE id=?;";
+	private static final String FIND_RESERVATIONS_BY_VEHICLE_AND_DATE_QUERY = "SELECT id,client_id, debut, fin FROM Reservation WHERE vehicle_id = ? AND (debut BETWEEN ? AND ? OR fin BETWEEN ? AND ?)";
 
 	public long create(Reservation reservation) throws DaoException {
 		try (Connection connection = connectionManager.getConnection();
@@ -145,4 +146,30 @@ public class ReservationDao {
 		}
 		return 0;
 	}
+	public List<Reservation> findResaByVehicleIdAndDate(long vehicleId, LocalDate debut, LocalDate fin) throws DaoException {
+		List<Reservation> reservations = new ArrayList<>();
+		try (Connection connection = connectionManager.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(FIND_RESERVATIONS_BY_VEHICLE_AND_DATE_QUERY)) {
+			statement.setLong(1, vehicleId);
+			statement.setDate(2, Date.valueOf(debut));
+			statement.setDate(3, Date.valueOf(fin));
+			statement.setDate(4, Date.valueOf(debut));
+			statement.setDate(5, Date.valueOf(fin));
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					int id = resultSet.getInt("id");
+					int clientId = resultSet.getInt("client_id");
+					LocalDate resaDebut = resultSet.getDate("debut").toLocalDate();
+					LocalDate resaFin = resultSet.getDate("fin").toLocalDate();
+					Reservation reser = new Reservation(id, clientId, (int) vehicleId, resaDebut, resaFin);
+					reservations.add(reser);
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return reservations;
+	}
+
+
 }

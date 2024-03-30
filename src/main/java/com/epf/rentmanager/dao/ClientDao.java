@@ -57,6 +57,23 @@ public class ClientDao {
 		}
 		return client.getClientId();
 	}
+	public boolean mailexist(String mail) throws DaoException{
+		boolean exists = false;
+		try (Connection connection = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "");
+			 PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) AS count FROM Client WHERE email = ?")) {
+			statement.setString(1, mail);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					int count = resultSet.getInt("count");
+					exists = count > 0;
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return exists;
+	}
+
 	public Client findById(long id) throws DaoException {
 		Client client = null;
 		try (Connection connexion = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "");
