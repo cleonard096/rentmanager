@@ -2,6 +2,7 @@ package com.epf.rentmanager.dao;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import com.epf.rentmanager.model.Reservation;
 import com.epf.rentmanager.persistence.ConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import static java.time.Period.ZERO;
 
 @Repository
 public class ReservationDao {
@@ -171,5 +174,40 @@ public class ReservationDao {
 		return reservations;
 	}
 
+	public Period findPeriodBookedBeforeDate(long vehicleId, LocalDate date) throws DaoException {
+		Period totalPeriod = Period.ZERO;
+		LocalDate previousReservationSart = date;
+
+		try (Connection connection = connectionManager.getConnection();
+			 PreparedStatement statement = connection.prepareStatement("SELECT debut, fin FROM Reservation WHERE vehicle_id = ? AND fin <= ? ORDER BY debut DESC")) {
+			statement.setLong(1, vehicleId);
+			statement.setDate(2, Date.valueOf(date));
+			System.out.println("Try");
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				System.out.println("Try");
+				while (resultSet.next()) {
+					LocalDate reservationStart = resultSet.getDate("debut").toLocalDate();
+					LocalDate reservationEnd = resultSet.getDate("fin").toLocalDate();
+					System.out.println("Boucle");
+					System.out.println(previousReservationSart.minusDays(1));
+					System.out.println(reservationEnd);
+					System.out.println(reservationStart);
+
+					if (!previousReservationSart.minusDays(1).equals(reservationEnd)) {
+						break;
+					}
+					else{
+					Period period = Period.between(reservationStart, reservationEnd);
+					totalPeriod = totalPeriod.plus(period).plusDays(1);
+					previousReservationSart = reservationStart;
+					System.out.println(totalPeriod.getDays());}
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return totalPeriod;
+	}
 
 }

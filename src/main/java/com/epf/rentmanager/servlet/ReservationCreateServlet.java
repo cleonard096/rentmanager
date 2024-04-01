@@ -64,12 +64,8 @@ public class ReservationCreateServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/rents");
         } catch (ServiceException e) {
             e.printStackTrace();
-            if (e.getMessage().startsWith("La fin")) {
-                request.setAttribute("dateError", e.getMessage());
-            } else {
                 request.setAttribute("error", e.getMessage());
-            }
-            // Rechargez les listes de clients et de véhicules
+
             List<Client> clients = null;
             try {
                 clients = clientService.findAll();
