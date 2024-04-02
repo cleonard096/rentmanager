@@ -4,6 +4,7 @@ import com.epf.rentmanager.dao.ReservationDao;
 import com.epf.rentmanager.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 
 import java.time.Period;
 import java.util.List;
@@ -17,15 +18,23 @@ public class ReservationService {
     }
 
     public long create(Reservation reservation) throws ServiceException {
+        if (reservation.getFin().isBefore(reservation.getDebut())){
+            throw new ServiceException("La fin de la réservation doit etre après le début", null);
+        }
         Period period = Period.between(reservation.getDebut(), reservation.getFin()).plusDays(1);
         if (period.getDays()>7){
             throw new ServiceException("La durée maximum de location est de 7 jours", null);
         }
         try {
-            Period periodBooked = reservationDao.findPeriodBookedBeforeDate(reservation.getVehicleId(), reservation.getDebut());
-            System.out.println("Service");
-            System.out.println(periodBooked.plus(period).getDays());
-            if (periodBooked.plus(period).getDays() > 30) {
+            Period periodBookedBeforeByClient = reservationDao.findPeriodBookedBeforeDateByClient(reservation.getClientId(),reservation.getVehicleId(), reservation.getDebut());
+            Period periodBookedAfterByClient = reservationDao.findPeriodBookedAfterDateByClient(reservation.getClientId(),reservation.getVehicleId(), reservation.getFin());
+            if (periodBookedBeforeByClient.plus(periodBookedAfterByClient).plus(period).getDays() > 7) {
+                throw new ServiceException("La durée maximum de location est de 7 jours par client", null);
+            }
+        try {
+            Period periodBookedBefore = reservationDao.findPeriodBookedBeforeDate(reservation.getVehicleId(), reservation.getDebut());
+            Period periodBookedAfter = reservationDao.findPeriodBookedAfterDate(reservation.getVehicleId(), reservation.getFin());
+            if (periodBookedBefore.plus(periodBookedAfter).plus(period).getDays() > 30) {
                 throw new ServiceException("La voiture ne peut pas être réservée 30 jours de suite sans pause.", null);
             }
 
@@ -41,7 +50,10 @@ public class ReservationService {
         }
     } catch (DaoException e) {
             throw new RuntimeException(e);
-        }}
+        }} catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
         public List<Reservation> findAll() throws ServiceException {
@@ -97,4 +109,34 @@ public class ReservationService {
             throw new ServiceException("Error while counting reservations: " + e.getMessage(), e);
         }
     }
+    public void modify(long reservationId, LocalDate newDebut, LocalDate newFin) throws ServiceException {
+        try {
+            if (newFin.isBefore(newDebut)){
+                throw new ServiceException("La fin de la réservation doit etre après le début", null);
+            }
+            Period period = Period.between(newDebut, newFin).plusDays(1);
+            Reservation reservation = reservationDao.findById(reservationId);
+            Period periodBookedBeforeByClient = reservationDao.findPeriodBookedBeforeDateByClient(reservation.getClientId(), reservation.getVehicleId(), newDebut);
+            Period periodBookedAfterByClient = reservationDao.findPeriodBookedAfterDateByClient(reservation.getClientId(), reservation.getVehicleId(), newFin);
+            if (periodBookedBeforeByClient.plus(periodBookedAfterByClient).plus(period).getDays() > 7) {
+                throw new ServiceException("La durée maximum de location est de 7 jours par client", null);
+            }
+            Period periodBookedBefore = reservationDao.findPeriodBookedBeforeDate(reservation.getVehicleId(), newDebut);
+            Period periodBookedAfter = reservationDao.findPeriodBookedAfterDate(reservation.getVehicleId(), newFin);
+            if (periodBookedBefore.plus(periodBookedAfter).plus(period).getDays() > 30) {
+                throw new ServiceException("La voiture ne peut pas être réservée 30 jours de suite sans pause.", null);
+            }
+
+            List<Reservation> existingReservations = reservationDao.findResaByVehicleIdAndDate(reservation.getVehicleId(), newDebut, newFin);
+            List<Reservation> existingReservationsWithout= reservationDao.removeReservationById(existingReservations,reservation.getReservationId());
+            if (!existingReservationsWithout.isEmpty()) {
+                throw new ServiceException("La voiture est déjà réservée pour les dates spécifiées.", null);
+            }
+
+            reservationDao.modify(reservationId, newDebut, newFin);
+        } catch (DaoException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
 }

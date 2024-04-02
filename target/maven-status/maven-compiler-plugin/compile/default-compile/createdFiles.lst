@@ -11,6 +11,7 @@ com/epf/rentmanager/servlet/VehicleListServlet.class
 com/epf/rentmanager/dao/ClientDao.class
 com/epf/rentmanager/model/Reservation.class
 com/epf/rentmanager/servlet/ClientCreateServlet.class
+com/epf/rentmanager/servlet/VehicleModifyServlet.class
 com/epf/rentmanager/ui/cli/MainCLI.class
 com/epf/rentmanager/model/Client.class
 com/epf/rentmanager/servlet/ClientDetailsServlet.class
@@ -18,6 +19,7 @@ com/epf/rentmanager/dao/ReservationDao.class
 com/epf/rentmanager/model/Vehicle.class
 com/epf/rentmanager/service/ServiceException.class
 com/epf/rentmanager/servlet/HomeServlet.class
+com/epf/rentmanager/servlet/ReservationModifyServlet.class
 com/epf/rentmanager/WebConfiguration.class
 com/epf/rentmanager/AppConfiguration.class
 com/epf/rentmanager/persistence/FillDatabase.class

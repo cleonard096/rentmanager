@@ -43,10 +43,10 @@
                                     <td>${vehicle.modele}</td>
                                     <td>${vehicle.nbPlaces}</td>
                                     <td>
-                                        <a class="btn btn-primary disabled" href="car-detail.html">
+                                        <a class="btn btn-primary disabled" href="#">
                                             <i class="fa fa-play"></i>
                                         </a>
-                                        <a class="btn btn-success disabled" href="#">
+                                        <a class="btn btn-success modify-btn" href="${pageContext.request.contextPath}/cars/modify?id=${vehicle.vehicleId}">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                         <button class="btn btn-danger delete-btn" data-vehicle-id="${vehicle.vehicleId}">

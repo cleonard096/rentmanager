@@ -42,10 +42,10 @@
                                         <td>${reservation.debut}</td>
                                         <td>${reservation.fin}</td>
                                         <td>
-                                            <a class="btn btn-primary" href="${pageContext.request.contextPath}/cars?id=${reservation.vehicleId}">
+                                            <a class="btn btn-primary disabled" href="#">
                                                 <i class="fa fa-play"></i>
                                             </a>
-                                            <a class="btn btn-success disabled" href="#">
+                                            <a class="btn btn-success modify-btn" href="${pageContext.request.contextPath}/rents/modify?id=${reservation.reservationId}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
                                             <button class="btn btn-danger delete-btn" data-reservation-id="${reservation.reservationId}">

@@ -22,7 +22,7 @@ public class VehicleService {
 		if (vehicle.getConstructeur().isEmpty() || vehicle.getModele().isEmpty()) {
 			throw new ServiceException("Le modèle et le constructeur du véhicule ne peut pas être vide", null);
 		}
-		if (vehicle.getNbPlaces()<10 || vehicle.getNbPlaces()>1) {
+		if ((vehicle.getNbPlaces()>=10 || vehicle.getNbPlaces()<=1)) {
 			throw new ServiceException("Le nombre de place doit être compris entre 2 et 9", null);
 		}
 		try {
@@ -59,6 +59,16 @@ public class VehicleService {
 	public int count() throws ServiceException {
 		try {
 			return vehicleDao.count();
+		} catch (DaoException e) {
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+	public void modify(long vehicleId, String newConstructeur, String newModele, int newNbPlaces) throws ServiceException {
+		if ((newNbPlaces>=10 || newNbPlaces<=1)) {
+			throw new ServiceException("Le nombre de place doit être compris entre 2 et 9", null);
+		}
+		try {
+			vehicleDao.modify(vehicleId, newConstructeur, newModele, newNbPlaces);
 		} catch (DaoException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}

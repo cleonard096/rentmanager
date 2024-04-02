@@ -177,23 +177,15 @@ public class ReservationDao {
 	public Period findPeriodBookedBeforeDate(long vehicleId, LocalDate date) throws DaoException {
 		Period totalPeriod = Period.ZERO;
 		LocalDate previousReservationSart = date;
-
 		try (Connection connection = connectionManager.getConnection();
 			 PreparedStatement statement = connection.prepareStatement("SELECT debut, fin FROM Reservation WHERE vehicle_id = ? AND fin <= ? ORDER BY debut DESC")) {
 			statement.setLong(1, vehicleId);
 			statement.setDate(2, Date.valueOf(date));
-			System.out.println("Try");
 
 			try (ResultSet resultSet = statement.executeQuery()) {
-				System.out.println("Try");
 				while (resultSet.next()) {
 					LocalDate reservationStart = resultSet.getDate("debut").toLocalDate();
 					LocalDate reservationEnd = resultSet.getDate("fin").toLocalDate();
-					System.out.println("Boucle");
-					System.out.println(previousReservationSart.minusDays(1));
-					System.out.println(reservationEnd);
-					System.out.println(reservationStart);
-
 					if (!previousReservationSart.minusDays(1).equals(reservationEnd)) {
 						break;
 					}
@@ -201,13 +193,132 @@ public class ReservationDao {
 					Period period = Period.between(reservationStart, reservationEnd);
 					totalPeriod = totalPeriod.plus(period).plusDays(1);
 					previousReservationSart = reservationStart;
-					System.out.println(totalPeriod.getDays());}
+					}
 				}
 			}
 		} catch (SQLException e) {
 			throw new DaoException(e.getMessage());
 		}
 		return totalPeriod;
+	}
+	public Period findPeriodBookedAfterDate(long vehicleId, LocalDate date) throws DaoException {
+		Period totalPeriod = Period.ZERO;
+		LocalDate previousReservationEnd = date;
+
+		try (Connection connection = connectionManager.getConnection();
+			 PreparedStatement statement = connection.prepareStatement("SELECT debut, fin FROM Reservation WHERE vehicle_id = ? AND debut >= ? ORDER BY debut ASC")) {
+			statement.setLong(1, vehicleId);
+			statement.setDate(2, Date.valueOf(date));
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					LocalDate reservationStart = resultSet.getDate("debut").toLocalDate();
+					LocalDate reservationEnd = resultSet.getDate("fin").toLocalDate();
+
+					if (!previousReservationEnd.plusDays(1).equals(reservationStart)) {
+						break;
+					}
+
+					Period period = Period.between(reservationStart, reservationEnd);
+					totalPeriod = totalPeriod.plus(period);
+
+					previousReservationEnd = reservationEnd;
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+
+		return totalPeriod;
+	}
+	public Period findPeriodBookedBeforeDateByClient(long clientId, long vehicleId, LocalDate date) throws DaoException {
+		Period totalPeriod = Period.ZERO;
+		LocalDate previousReservationSart = date;
+		try (Connection connection = connectionManager.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(
+					 "SELECT debut, fin FROM Reservation WHERE client_id = ? AND vehicle_id = ? AND fin <= ? ORDER BY debut DESC")) {
+			statement.setLong(1, clientId);
+			statement.setLong(2, vehicleId);
+			statement.setDate(3, Date.valueOf(date));
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					LocalDate reservationStart = resultSet.getDate("debut").toLocalDate();
+					LocalDate reservationEnd = resultSet.getDate("fin").toLocalDate();
+					if (!previousReservationSart.minusDays(1).equals(reservationEnd)) {
+						break;
+					} else {
+						Period period = Period.between(reservationStart, reservationEnd);
+						totalPeriod = totalPeriod.plus(period).plusDays(1);
+						previousReservationSart = reservationStart;
+					}
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return totalPeriod;
+	}
+	public Period findPeriodBookedAfterDateByClient(long clientId, long vehicleId, LocalDate date) throws DaoException {
+		Period totalPeriod = Period.ZERO;
+		LocalDate previousReservationEnd = date;
+
+		try (Connection connection = connectionManager.getConnection();
+			 PreparedStatement statement = connection.prepareStatement(
+					 "SELECT debut, fin FROM Reservation WHERE client_id = ? AND vehicle_id = ? AND debut >= ? ORDER BY debut ASC")) {
+			statement.setLong(1, clientId);
+			statement.setLong(2, vehicleId);
+			statement.setDate(3, Date.valueOf(date));
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					LocalDate reservationStart = resultSet.getDate("debut").toLocalDate();
+					LocalDate reservationEnd = resultSet.getDate("fin").toLocalDate();
+
+					if (!previousReservationEnd.plusDays(1).equals(reservationStart)) {
+						break;
+					}
+
+					Period period = Period.between(reservationStart, reservationEnd);
+					totalPeriod = totalPeriod.plus(period);
+
+					previousReservationEnd = reservationEnd;
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+
+		return totalPeriod;
+	}
+	public void modify(long reservationId, LocalDate newDebut, LocalDate newFin) throws DaoException {
+		try (Connection connection = connectionManager.getConnection()) {
+			if (newDebut != null) {
+				try (PreparedStatement statement = connection.prepareStatement("UPDATE Reservation SET debut=? WHERE id=?")) {
+					statement.setDate(1, Date.valueOf(newDebut));
+					statement.setLong(2, reservationId);
+					statement.executeUpdate();
+				}
+			}
+			if (newFin != null) {
+				try (PreparedStatement statement = connection.prepareStatement("UPDATE Reservation SET fin=? WHERE id=?")) {
+					statement.setDate(1, Date.valueOf(newFin));
+					statement.setLong(2, reservationId);
+					statement.executeUpdate();
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+	}
+	public static List<Reservation> removeReservationById(List<Reservation> reservations, long idToRemove) {
+		List<Reservation> updatedReservations = new ArrayList<>();
+		for (Reservation reservation : reservations) {
+			if (reservation.getReservationId() != idToRemove) {
+				updatedReservations.add(reservation);
+			}
+		}
+		return updatedReservations;
 	}
 
 }

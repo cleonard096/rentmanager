@@ -11,8 +11,10 @@
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/service/ReservationService.java
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/service/ClientService.java
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/servlet/ReservationListServlet.java
+/Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/servlet/VehicleModifyServlet.java
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/servlet/HomeServlet.java
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/model/Reservation.java
+/Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/servlet/ReservationModifyServlet.java
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/servlet/ClientListServlet.java
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/dao/ReservationDao.java
 /Users/layscervantes/Java/rentmanager/src/main/java/com/epf/rentmanager/persistence/FillDatabase.java

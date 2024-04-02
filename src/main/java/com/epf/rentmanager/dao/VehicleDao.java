@@ -106,4 +106,32 @@ public class VehicleDao {
 		}
 		return count;
 	}
+	public void modify(long vehicleId, String newConstructeur, String newModele, int newNbPlaces) throws DaoException {
+		try (Connection connection = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "")) {
+			if (newConstructeur != null) {
+				try (PreparedStatement statement = connection.prepareStatement("UPDATE Vehicle SET constructeur=? WHERE id=?")) {
+					statement.setString(1, newConstructeur);
+					statement.setLong(2, vehicleId);
+					statement.executeUpdate();
+				}
+			}
+			if (newModele != null) {
+				try (PreparedStatement statement = connection.prepareStatement("UPDATE Vehicle SET modele=? WHERE id=?")) {
+					statement.setString(1, newModele);
+					statement.setLong(2, vehicleId);
+					statement.executeUpdate();
+				}
+			}
+			if (newNbPlaces != -1) {
+				try (PreparedStatement statement = connection.prepareStatement("UPDATE Vehicle SET nb_places=? WHERE id=?")) {
+					statement.setInt(1, newNbPlaces);
+					statement.setLong(2, vehicleId);
+					statement.executeUpdate();
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+	}
+
 }
