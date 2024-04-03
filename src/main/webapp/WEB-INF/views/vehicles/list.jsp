@@ -43,7 +43,7 @@
                                     <td>${vehicle.modele}</td>
                                     <td>${vehicle.nbPlaces}</td>
                                     <td>
-                                        <a class="btn btn-primary disabled" href="#">
+                                        <a class="btn btn-primary" href="${pageContext.request.contextPath}/cars/details?id=${vehicle.vehicleId}">
                                             <i class="fa fa-play"></i>
                                         </a>
                                         <a class="btn btn-success modify-btn" href="${pageContext.request.contextPath}/cars/modify?id=${vehicle.vehicleId}">

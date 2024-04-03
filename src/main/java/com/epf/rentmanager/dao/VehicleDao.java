@@ -134,4 +134,21 @@ public class VehicleDao {
 		}
 	}
 
+	public List<Vehicle> findByReservations(List<Reservation> reservations) throws DaoException {
+		List<Vehicle> vehicles = new ArrayList<>();
+		try {
+			for (Reservation reservation : reservations) {
+				long vehicleId = reservation.getVehicleId();
+				Vehicle vehicle = findById(vehicleId);
+				if (vehicle != null) {
+					vehicles.add(vehicle);
+				}
+			}
+		} catch (DaoException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return vehicles;
+	}
+
+
 }

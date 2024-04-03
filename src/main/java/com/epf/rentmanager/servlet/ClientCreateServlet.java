@@ -45,7 +45,7 @@ public class ClientCreateServlet extends HttpServlet {
         try {
             clientService.create(newClient);
             response.sendRedirect(request.getContextPath() + "/users");
-        } catch (ServiceException e) {
+        } catch (ServiceException | NumberFormatException e) {
             e.printStackTrace();
             if (Objects.equals(e.getMessage(), "L'adresse email est déjà attribué à un client.")){
                 request.setAttribute("error_mail", e.getMessage());
@@ -59,7 +59,16 @@ public class ClientCreateServlet extends HttpServlet {
             if (Objects.equals(e.getMessage(), "Le prénom du client doit contenir au moins 3 caracteres.")){
                 request.setAttribute("error_prenom", e.getMessage());
             }
-            this.getServletContext().getRequestDispatcher("/WEB-INF/views/users/create.jsp").forward(request, response);
+            long clientId = Long.parseLong(request.getParameter("clientId"));
+            Client client = null;
+            try {
+                client = clientService.findById(clientId);
+            } catch (ServiceException ex) {
+                throw new RuntimeException(ex);
+            }
+            request.setAttribute("client", client);
+            request.getRequestDispatcher("/WEB-INF/views/users/modify.jsp").forward(request, response);
         }
+
     }
 }

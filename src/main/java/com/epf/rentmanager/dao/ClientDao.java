@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.epf.rentmanager.model.Client;
 import com.epf.rentmanager.model.Reservation;
+import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.persistence.ConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,7 @@ public class ClientDao {
 	private static final String DELETE_CLIENT_QUERY = "DELETE FROM Client WHERE id=?;";
 	private static final String FIND_CLIENT_QUERY = "SELECT nom, prenom, email, naissance FROM Client WHERE id=?;";
 	private static final String FIND_CLIENTS_QUERY = "SELECT id, nom, prenom, email, naissance FROM Client;";
+	private static final String MODIFY_CLIENT_QUERY = "UPDATE Client SET nom=?, prenom=?, email=?, naissance=? WHERE id=?;";
 
 	public long create(Client client) throws DaoException {
 		try {
@@ -126,6 +128,55 @@ public class ClientDao {
 			throw new DaoException(e.getMessage());
 		}
 		return count;
+	}
+
+	public void modify(long clientId, String newNom, String newPrenom, String newEmail, LocalDate newDateNaissance) throws DaoException {
+
+		try (Connection connection = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "");
+			 PreparedStatement statement = connection.prepareStatement(MODIFY_CLIENT_QUERY)) {
+			statement.setString(1, newNom);
+			statement.setString(2, newPrenom);
+			statement.setString(3, newEmail);
+			statement.setDate(4, Date.valueOf(newDateNaissance));
+			statement.setLong(5, clientId);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+	}
+	public boolean mailexistForOtherClients(String mail, long clientId) throws DaoException {
+		boolean exists = false;
+		try (Connection connection = DriverManager.getConnection("jdbc:h2:~/RentManagerDatabase", "", "")) {
+			String query = "SELECT COUNT(*) AS count FROM Client WHERE email = ? AND id != ?";
+			try (PreparedStatement statement = connection.prepareStatement(query)) {
+				statement.setString(1, mail);
+				statement.setLong(2, clientId);
+				try (ResultSet resultSet = statement.executeQuery()) {
+					if (resultSet.next()) {
+						int count = resultSet.getInt("count");
+						exists = count > 0;
+					}
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return exists;
+	}
+	public List<Client> findByReservations(List<Reservation> reservations) throws DaoException {
+		List<Client> clients = new ArrayList<>();
+		try {
+			for (Reservation reservation : reservations) {
+				long clientId = reservation.getClientId();
+				Client client = findById(clientId);
+				if (client != null) {
+					clients.add(client);
+				}
+			}
+		} catch (DaoException e) {
+			throw new DaoException(e.getMessage());
+		}
+		return clients;
 	}
 
 }

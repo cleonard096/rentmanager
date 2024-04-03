@@ -26,6 +26,7 @@ public class ReservationDao {
 	private static final String FIND_RESERVATION_QUERY = "SELECT client_id, vehicle_id, debut, fin FROM Reservation WHERE id=?;";
 	private static final String FIND_RESERVATIONS_BY_VEHICLE_AND_DATE_QUERY = "SELECT id,client_id, debut, fin FROM Reservation WHERE vehicle_id = ? AND (debut BETWEEN ? AND ? OR fin BETWEEN ? AND ?)";
 
+
 	public long create(Reservation reservation) throws DaoException {
 		try (Connection connection = connectionManager.getConnection();
 			 PreparedStatement statement = connection.prepareStatement(CREATE_RESERVATION_QUERY, Statement.RETURN_GENERATED_KEYS)) {
@@ -320,5 +321,7 @@ public class ReservationDao {
 		}
 		return updatedReservations;
 	}
+
+
 
 }

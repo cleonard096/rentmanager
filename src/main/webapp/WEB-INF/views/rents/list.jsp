@@ -42,9 +42,6 @@
                                         <td>${reservation.debut}</td>
                                         <td>${reservation.fin}</td>
                                         <td>
-                                            <a class="btn btn-primary disabled" href="#">
-                                                <i class="fa fa-play"></i>
-                                            </a>
                                             <a class="btn btn-success modify-btn" href="${pageContext.request.contextPath}/rents/modify?id=${reservation.reservationId}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
