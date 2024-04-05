@@ -15,6 +15,7 @@ import com.epf.rentmanager.service.ServiceException;
 public class ClientServiceTest {
     private ClientDao clientDaoMock;
     private ClientService clientService;
+
     @Before
     public void setUp() {
         clientDaoMock = mock(ClientDao.class);
@@ -36,6 +37,7 @@ public class ClientServiceTest {
         assertNotNull(foundClient);
         assertEquals(expectedClient, foundClient);
     }
+
     @Test
     public void testDeleteClient() throws ServiceException, DaoException {
         Client client = new Client();
@@ -49,12 +51,45 @@ public class ClientServiceTest {
         verify(clientDaoMock).delete(client);
         assertEquals(client.getClientId(), deletedClientId);
     }
-    @Test
-    public void testCountClients() throws ServiceException, DaoException {
-        int expectedCount = 5;//à changer selon le nbr de client
-        when(clientDaoMock.count()).thenReturn(expectedCount);
-        int count = clientService.count();
-        verify(clientDaoMock).count();
-        assertEquals(expectedCount, count);
+
+    @Test(expected = ServiceException.class)
+    public void testCreateClientWithEmptyNom() throws ServiceException {
+        Client client = new Client();
+        client.setNom("");
+        client.setPrenom("John");
+        client.setEmail("john@example.com");
+        client.setDateNaissance(LocalDate.of(2000, 1, 1));
+        clientService.create(client);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testCreateClientWithInvalidNomLength() throws ServiceException {
+        Client client = new Client();
+        client.setNom("Jo");
+        client.setPrenom("John");
+        client.setEmail("john@example.com");
+        client.setDateNaissance(LocalDate.of(2000, 1, 1));
+        clientService.create(client);
+    }
+
+
+    @Test(expected = ServiceException.class)
+    public void testModifyClientWithEmptyNom() throws ServiceException {
+        long clientId = 1L;
+        String newNom = "";
+        String newPrenom = "John";
+        String newEmail = "john@example.com";
+        LocalDate newDateNaissance = LocalDate.of(2000, 1, 1);
+        clientService.modify(clientId, newNom, newPrenom, newEmail, newDateNaissance);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void testModifyClientWithInvalidNomLength() throws ServiceException {
+        long clientId = 1L;
+        String newNom = "Jo";
+        String newPrenom = "John";
+        String newEmail = "john@example.com";
+        LocalDate newDateNaissance = LocalDate.of(2000, 1, 1);
+        clientService.modify(clientId, newNom, newPrenom, newEmail, newDateNaissance);
     }
 }
